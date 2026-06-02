@@ -128,6 +128,12 @@ def program_hex_to_flash(output_file):
 
 		#import pdb; pdb.set_trace()
 
+		# Program the first word with number of words
+
+		f.seek(0)
+
+		count += 1
+
 		while(count*4 >= 256):
 			flash_page_program(f, address=address)			
 			count -= 64
@@ -204,7 +210,7 @@ def main():
 	time.sleep(2)
 	print(f"Done erasing!")
 
-	flash_read_contents(line_count)
+	flash_read_contents(line_count+1)
 
 	print(f"Programming flash with input hex file")
 
@@ -217,9 +223,18 @@ def main():
 	slave_select()
 	#flash_send(command=READ, address=[0x00, 0x00, 0x00])
 
-	new_data = flash_read_contents(line_count)
+	new_data = flash_read_contents(line_count+1)
 
 	hex_data_old = []
+	
+	line_count_word = []
+	line_count_word.append(line_count.to_bytes(4)[3])
+	line_count_word.append(line_count.to_bytes(4)[2])
+	line_count_word.append(line_count.to_bytes(4)[1])
+	line_count_word.append(line_count.to_bytes(4)[0])
+
+	hex_data_old.append(line_count_word)
+
 	for i in range(line_count):
 		byte = []
 		#import pdb; pdb.set_trace()
